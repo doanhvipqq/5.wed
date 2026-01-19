@@ -269,8 +269,51 @@ class ChatbotHandler:
             log.info(f"Chat [{self.current_profile}] - User: {normalized_content}")
             log.info(f"Chat [{self.current_profile}] - Bot: {reply_text[:50]}...")
             
-            await update.message.reply_text(reply_text)
+            # Split message if too long (Telegram limit: 4096 characters)
+            await self._send_split_message(update, reply_text)
             
         except Exception as e:
             log.error(f"AI Error: {e}")
             await update.message.reply_text(f"Bot bị lỗi: {str(e)[:50]}")
+    
+    async def _send_split_message(self, update: Update, text: str, max_length: int = 4000):
+        """Split and send long messages in chunks to avoid Telegram's 4096 char limit"""
+        if len(text) <= max_length:
+            await update.message.reply_text(text)
+            return
+        
+        # Split by paragraphs first to keep context
+        parts = []
+        current_part = ""
+        
+        # Try splitting by double newlines (paragraphs)
+        paragraphs = text.split('\n\n')
+        
+        for para in paragraphs:
+            # If adding this paragraph exceeds limit, save current part
+            if len(current_part) + len(para) + 2 > max_length:
+                if current_part:
+                    parts.append(current_part.strip())
+                    current_part = para
+                else:
+                    # Single paragraph is too long, split by newlines
+                    lines = para.split('\n')
+                    for line in lines:
+                        if len(current_part) + len(line) + 1 > max_length:
+                            if current_part:
+                                parts.append(current_part.strip())
+                            current_part = line
+                        else:
+                            current_part += ("\n" if current_part else "") + line
+            else:
+                current_part += ("\n\n" if current_part else "") + para
+        
+        if current_part:
+            parts.append(current_part.strip())
+        
+        # Send all parts
+        for i, part in enumerate(parts):
+            if i > 0:
+                await update.message.chat.send_action(action="typing")
+            await update.message.reply_text(part)
+
