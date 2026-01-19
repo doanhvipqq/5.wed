@@ -226,16 +226,10 @@ class ChatbotHandler:
             return # Silent fail if not ready or not intended
             
         user_input = update.message.text
-        # In Groups, mainly respond if mentioned or replied to?
-        # For simplicity, if it's a private chat, always respond.
-        # If group, maybe only if mentioned?
-        # The user seems to want a direct replacement, in Discord it was on_message with checks.
+        # Respond to all messages in groups and private chats
+        # Bot will reply to every text message like a direct conversation
         
-        is_private = update.message.chat.type == "private"
-        is_reply = update.message.reply_to_message and update.message.reply_to_message.from_user.id == context.bot.id
-        
-        if is_private or is_reply or (context.bot.username in user_input):
-             await self._process_chat(update, user_input)
+        await self._process_chat(update, user_input)
 
     async def _process_chat(self, update: Update, raw_content: str):
         normalized_content = self.normalize_input(raw_content)
@@ -266,7 +260,7 @@ class ChatbotHandler:
             log.info(f"Chat [{self.current_profile}] - User: {normalized_content}")
             log.info(f"Chat [{self.current_profile}] - Bot: {reply_text[:50]}...")
             
-            await update.message.reply_text(reply_text, parse_mode="Markdown")
+            await update.message.reply_text(reply_text)
             
         except Exception as e:
             log.error(f"AI Error: {e}")
