@@ -35,6 +35,7 @@ const modalOverlay = document.getElementById('modalOverlay');
 const modalClose = document.getElementById('modalClose');
 const modalImage = document.getElementById('modalImage');
 const modalDownload = document.getElementById('modalDownload');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
@@ -525,10 +526,12 @@ function toggleDarkMode() {
 // ==================== SIDEBAR ====================
 function openSidebar() {
     sidebar.classList.add('open');
+    if (sidebarOverlay) sidebarOverlay.classList.add('active');
 }
 
 function closeSidebar() {
     sidebar.classList.remove('open');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('active');
 }
 
 // ==================== TOAST ====================
@@ -584,6 +587,7 @@ function setupEventListeners() {
     // Sidebar
     menuBtn.addEventListener('click', openSidebar);
     sidebarClose.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
     // Close sidebar on outside click
     document.addEventListener('click', (e) => {
