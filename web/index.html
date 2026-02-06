@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bóng X AI - Web Chatbot</title>
+    <meta name="description" content="Web AI Chatbot với nhiều profile tính cách - Được tạo bởi Bóng X">
+    <link rel="icon" href="https://i.imgur.com/hqd8mCt.jpeg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Puter.js for AI Image Generation -->
+    <script src="https://js.puter.com/v2/"></script>
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <span class="logo-text">Bóng X AI</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">✕</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">🎭 Profiles AI</h3>
+                <div class="profiles-list" id="profilesList">
+                    <!-- Profiles loaded dynamically -->
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">⚙️ Cài đặt</h3>
+                <div class="settings-group">
+                    <label class="setting-item">
+                        <span>Dark Mode</span>
+                        <input type="checkbox" id="darkModeToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <button class="btn btn-outline" id="clearHistoryBtn">
+                        🗑️ Xóa lịch sử
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">👨‍💻 Tác giả</h3>
+                <div class="author-info">
+                    <div class="author-avatar">
+                        <img src="https://i.imgur.com/hqd8mCt.jpeg" alt="Trần Đức Doanh">
+                    </div>
+                    <div class="author-details">
+                        <span class="author-name">Trần Đức Doanh</span>
+                        <a href="https://t.me/doanhvip12" target="_blank" class="author-link">📱 Tele: @doanhvip12</a>
+                        <a href="https://t.me/doanhvip1" target="_blank" class="author-link">👥 Group: @doanhvip1</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <p>Made with ❤️ by Bóng X</p>
+                <p class="copyright">© 2026 Tran Duc Doanh</p>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="chat-header">
+                <button class="menu-btn" id="menuBtn">☰</button>
+                <div class="header-info">
+                    <h1 class="header-title">Bóng X AI</h1>
+                    <span class="header-subtitle" id="currentProfile">Profile: Default</span>
+                </div>
+                <div class="header-actions">
+                    <a href="https://t.me/doanhvip12" target="_blank" class="header-icon-btn" title="Liên hệ Tác giả">
+                        <img src="https://i.imgur.com/hqd8mCt.jpeg" alt="Author">
+                    </a>
+                </div>
+            </header>
+
+            <!-- Chat Messages -->
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome Message -->
+                    <div class="message bot-message welcome-message">
+                        <div class="message-avatar">
+                            <img src="https://i.imgur.com/hqd8mCt.jpeg" alt="Bot">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <div class="welcome-header">
+                                    <img src="https://i.imgur.com/hqd8mCt.jpeg" alt="Welcome" class="welcome-image">
+                                    <h3>Xin chào! Mình là Bóng X AI 🎉</h3>
+                                </div>
+                                <p>Được phát triển bởi <strong>Trần Đức Doanh</strong>.</p>
+                                <ul class="welcome-links">
+                                    <li>👑 Dev: <a href="https://t.me/doanhvip12" target="_blank">@doanhvip12</a></li>
+                                    <li>👥 Group: <a href="https://t.me/doanhvip1" target="_blank">@doanhvip1</a></li>
+                                </ul>
+                                <p>Mình có thể chat, xem ảnh, đọc tài liệu và tạo ảnh AI cực chất! Hãy thử ngay nhé ✨
+                                </p>
+                            </div>
+                            <span class="message-time">Bây giờ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <span>AI đang trả lời...</span>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <!-- File Preview -->
+                <div class="file-preview" id="filePreview"></div>
+
+                <div class="input-container">
+                    <button class="attach-btn" id="attachBtn" title="Đính kèm file (ảnh, PDF, TXT)">
+                        <svg viewBox="0 0 24 24" width="22" height="22">
+                            <path fill="currentColor"
+                                d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" />
+                        </svg>
+                    </button>
+                    <button class="generate-btn" id="generateBtn" title="Tạo ảnh AI">
+                        <svg viewBox="0 0 24 24" width="22" height="22">
+                            <path fill="currentColor"
+                                d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                        </svg>
+                    </button>
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" hidden>
+                    <textarea id="messageInput" placeholder="Nhập tin nhắn... (hoặc 'tạo ảnh [mô tả]')" rows="1"
+                        maxlength="2000"></textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Enter để gửi • 📎 đính kèm file • 🎨 tạo ảnh AI</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">✕</button>
+            <img id="modalImage" src="" alt="Preview">
+            <div class="modal-actions">
+                <a id="modalDownload" href="" download="bongx-ai-image.png" class="btn btn-primary">💾 Tải xuống</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

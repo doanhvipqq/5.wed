@@ -1,14 +1,12 @@
 services:
   - type: web
-    name: bongx-telegram-bot
+    name: bongx-ai-web
     env: python
     region: singapore
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py
+    startCommand: gunicorn --chdir web app:app
     envVars:
-      - key: TELEGRAM_TOKEN
-        sync: false
       - key: CER_API_KEY
         sync: false
       - key: PORT
