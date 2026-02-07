@@ -6,3 +6,6 @@ psutil
 flask
 flask-cors
 gunicorn
+python-telegram-bot
+cloudscraper
+requests
